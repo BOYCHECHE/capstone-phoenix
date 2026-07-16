@@ -1,0 +1,51 @@
+---
+- name: Configure all servers
+  hosts: all
+  become: true
+  gather_facts: true
+
+  # Remove the vars: block from here entirely
+
+  vars_files:
+    - ../group_vars/all/vault.yml
+
+  pre_tasks:
+    - name: Show Terraform outputs (debug)
+      debug:
+        msg:
+          frontend_ip: "{{ terraform_output.frontend_public_ip.value }}"
+
+  roles:
+    - role: common
+
+- name: Configure frontend servers
+  hosts: frontend
+  become: true
+  gather_facts: false
+
+  vars:
+    backend_ip: "{{ terraform_output.backend_private_ip.value }}"
+
+  roles:
+    - role: frontend
+
+- name: Configure backend servers
+  hosts: backend
+  become: true
+  gather_facts: false
+
+  vars:
+    db_endpoint: "{{ terraform_output.db_endpoint.value }}"
+    db_username: "{{ db_username }}"
+    db_password: "{{ db_password }}"
+
+  roles:
+    - role: backend
+
+- name: Configure database server
+  hosts: database
+  become: true
+  gather_facts: false
+
+  roles:
+    - role: database

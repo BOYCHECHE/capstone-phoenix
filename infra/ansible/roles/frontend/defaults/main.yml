@@ -1,0 +1,10 @@
+frontend_packages:
+  - nginx
+
+frontend_listen_port: 80
+frontend_app_dir: /opt/taskapp/frontend
+frontend_src_dir: /opt/taskapp/frontend
+frontend_build_dir: /opt/taskapp/frontend/dist
+frontend_nginx_root: /var/www/taskapp
+frontend_repo_url: "https://github.com/ts-a-devops/taskapp_frontend.git"
+frontend_branch: main

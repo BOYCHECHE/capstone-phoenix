@@ -1,0 +1,9 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for roles/database
+
+- name: Install database packages
+  apt:
+    name: mysql-server
+    state: present
+    update_cache: yes

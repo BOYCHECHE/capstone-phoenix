@@ -1,0 +1,16 @@
+common_packages:
+  - curl
+  - unzip
+  - git
+  - ca-certificates
+  - gnupg
+  - acl
+  - python3-pip
+  - python3-venv
+
+app_user: taskapp
+app_group: taskapp
+app_base_dir: /opt/taskapp
+
+# FIXED: Defining it here shares it across all plays and roles natively
+terraform_output: "{{ lookup('file', '/home/uchennakenny/project_tsacademy/infrastructure/terraform/root/terraform_output.json') | from_json }}"

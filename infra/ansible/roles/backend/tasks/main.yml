@@ -1,0 +1,78 @@
+---
+# roles/backend/tasks/main.yml
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+  tags:
+    - backend
+    - packages
+
+- name: Install backend system packages
+  apt:
+    name:
+      - python3
+      - python3-pip
+      - python3-venv
+      - git
+      - curl
+    state: present
+  tags:
+    - backend
+    - packages
+
+- name: Create backend application directory
+  file:
+    path: "{{ backend_app_dir }}"
+    state: directory
+    owner: "{{ backend_user }}"
+    group: "{{ backend_user }}"
+    mode: "0755"
+  tags:
+    - backend
+    - setup
+
+- name: Copy backend application files
+  copy:
+    src: backend/
+    dest: "{{ backend_app_dir }}"
+    owner: "{{ backend_user }}"
+    group: "{{ backend_user }}"
+    mode: "0755"
+  tags:
+    - backend
+    - deploy
+
+- name: Install Python dependencies
+  pip:
+    requirements: "{{ backend_app_dir }}/requirements.txt"
+    virtualenv: "{{ backend_app_dir }}/venv"
+    virtualenv_python: python3
+  tags:
+    - backend
+    - dependencies
+
+- name: Create backend systemd service
+  template:
+    src: backend.service.j2
+    dest: /etc/systemd/system/backend.service
+  notify: restart backend service
+  tags:
+    - backend
+    - service
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+  tags:
+    - backend
+    - service
+
+- name: Ensure backend service is running
+  systemd:
+    name: backend
+    state: started
+    enabled: yes
+  tags:
+    - backend
+    - service

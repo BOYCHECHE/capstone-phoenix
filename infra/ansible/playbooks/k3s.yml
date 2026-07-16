@@ -1,0 +1,24 @@
+---
+- name: Prepare all Kubernetes nodes
+  hosts: all
+  become: true
+  gather_facts: true
+
+  roles:
+    - common
+
+- name: Install K3s server
+  hosts: master
+  become: true
+  gather_facts: true
+
+  roles:
+    - k3s-server
+
+- name: Join K3s workers
+  hosts: workers
+  become: true
+  gather_facts: true
+
+  roles:
+    - k3s-agent

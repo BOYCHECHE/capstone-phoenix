@@ -4,6 +4,10 @@
 .terraform/
 *.tfvars
 !*.tfvars.example
+terraform_output.json
+# Terraform plan archives
+phoenix
+*.tfplan
 crash.log
 
 # kubeconfig & cluster joins
@@ -31,3 +35,5 @@ charts/*.tgz
 *.swp
 .idea/
 .vscode/
+
+

@@ -1,0 +1,5 @@
+---
+- name: restart backend service
+  systemd:
+    name: backend
+    state: restarted
