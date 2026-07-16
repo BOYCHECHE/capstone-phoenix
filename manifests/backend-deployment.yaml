@@ -33,10 +33,48 @@ spec:
                   matchLabels:
                     app: backend
 
+      # Core Requirement: Migrations decoupled from the app entrypoint to prevent multi-replica races
+      initContainers:
+        - name: backend-migration
+          image: ghcr.io/ts-a-devops/taskapp-backend
+          # Overriding the default entrypoint command to run migrations exclusively
+          command: ["sh", "-c", "alembic upgrade head"]
+          env:
+            - name: DATABASE_HOST
+              value: postgres
+            - name: DATABASE_PORT
+              value: "5432"
+            - name: DATABASE_NAME
+              value: taskapp
+            - name: DATABASE_USER
+              value: taskapp_admin
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: taskapp-secret
+                  key: POSTGRES_PASSWORD
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: taskapp-secret
+                  key: SECRET_KEY
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: taskapp-config
+                  key: PORT
+            - name: FLASK_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: taskapp-config
+                  key: FLASK_ENV
+
       containers:
         - name: backend
           image: ghcr.io/ts-a-devops/taskapp-backend
           imagePullPolicy: IfNotPresent
+          # Overriding the app startup command so it bypasses migrations in the entrypoint script
+          command: ["gunicorn", "--workers", "3", "--bind", "0.0.0.0:5000", "--access-logfile", "-", "run:app"]
           ports:
             - containerPort: 5000
           env:
@@ -69,20 +107,17 @@ spec:
                   name: taskapp-config
                   key: FLASK_ENV
           startupProbe:
-            httpGet:
-              path: /
+            tcpSocket:
               port: 5000
             failureThreshold: 30
             periodSeconds: 5
           readinessProbe:
-            httpGet:
-              path: /
+            tcpSocket:
               port: 5000
             initialDelaySeconds: 10
             periodSeconds: 5
           livenessProbe:
-            httpGet:
-              path: /
+            tcpSocket:
               port: 5000
             initialDelaySeconds: 30
             periodSeconds: 10
