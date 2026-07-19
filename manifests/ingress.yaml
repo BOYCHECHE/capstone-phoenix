@@ -5,8 +5,10 @@ metadata:
   namespace: taskapp
   annotations:
     kubernetes.io/ingress.class: traefik
-    cert-manager.io/cluster-issuer: "letsencrypt-production"
+    # 🔗 Tell Traefik to handle the Let's Encrypt handshake natively
     traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.certresolver: le
+
 spec:
   tls:
     - hosts:
