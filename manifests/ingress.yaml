@@ -5,8 +5,8 @@ metadata:
   namespace: taskapp
   annotations:
     kubernetes.io/ingress.class: traefik
-    # ⚡ Fixes the Bad Gateway by routing internal traffic over HTTP
-    traefik.ingress.kubernetes.io/service.serversscheme: http
+    # ⚡ Explicitly forces Traefik to look at Pod Endpoint IPs directly instead of ClusterIPs
+    traefik.ingress.kubernetes.io/service.nativelb: "true"
 spec:
   rules:
     - host: taskapp.51.20.43.134.sslip.io
