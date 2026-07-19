@@ -4,7 +4,8 @@ metadata:
   name: taskapp-ingress
   namespace: taskapp
   annotations:
-    kubernetes.io/ingress.class: traefik
+    # ⚡ The mandatory hook that tells Traefik to look inside this namespace
+    kubernetes.io/ingress.class: "traefik"
 spec:
   rules:
     - host: taskapp.51.20.43.134.sslip.io
@@ -14,15 +15,13 @@ spec:
             pathType: Prefix
             backend:
               service:
-                # 🔗 Forces Traefik to bypass namespace separation
-                name: backend.taskapp.svc.cluster.local
+                name: backend
                 port:
                   number: 5000
           - path: /
             pathType: Prefix
             backend:
               service:
-                # 🔗 Forces Traefik to bypass namespace separation
-                name: frontend.taskapp.svc.cluster.local
+                name: frontend
                 port:
                   number: 80
