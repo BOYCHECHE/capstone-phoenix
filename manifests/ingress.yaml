@@ -4,12 +4,27 @@ metadata:
   name: taskapp-ingress
   namespace: taskapp
   annotations:
-    kubernetes.io/ingress.class: "traefik"
+    kubernetes.io/ingress.class: traefik
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+    traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
+  tls:
+    - hosts:
+        - taskapp.51.20.43.134.sslip.io
+      secretName: taskapp-tls-cert
   rules:
-    - host: taskapp.local
+    - host: taskapp.51.20.43.134.sslip.io
       http:
         paths:
+          # 1. API Route: Ensures frontend client XHR requests reach the backend service
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend # ⚠️ Verify this matches your exact backend Service name
+                port:
+                  number: 5000 # ⚠️ Verify this matches your backend container port
+          # 2. Frontend Route: Catches all standard web browser requests
           - path: /
             pathType: Prefix
             backend:
@@ -17,4 +32,3 @@ spec:
                 name: frontend
                 port:
                   number: 80
-
