@@ -4,29 +4,20 @@ metadata:
   name: taskapp-ingress
   namespace: taskapp
   annotations:
+    # 🔗 Fixes the 404 path matching issue for Traefik
     kubernetes.io/ingress.class: traefik
-    # 🔗 Tell Traefik to handle the Let's Encrypt handshake natively
-    traefik.ingress.kubernetes.io/router.tls: "true"
-    traefik.ingress.kubernetes.io/router.certresolver: le
-
 spec:
-  tls:
-    - hosts:
-        - taskapp.51.20.43.134.sslip.io
-      secretName: taskapp-tls-cert
   rules:
     - host: taskapp.51.20.43.134.sslip.io
       http:
         paths:
-          # 1. API Route: Ensures frontend client XHR requests reach the backend service
           - path: /api
             pathType: Prefix
             backend:
               service:
-                name: backend # ⚠️ Verify this matches your exact backend Service name
+                name: backend
                 port:
-                  number: 5000 # ⚠️ Verify this matches your backend container port
-          # 2. Frontend Route: Catches all standard web browser requests
+                  number: 5000
           - path: /
             pathType: Prefix
             backend:
