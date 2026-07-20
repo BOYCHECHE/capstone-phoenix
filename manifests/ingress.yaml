@@ -4,7 +4,6 @@ metadata:
   name: taskapp-ingress
   namespace: taskapp
   annotations:
-    # ⚡ The mandatory hook that tells Traefik to look inside this namespace
     kubernetes.io/ingress.class: "traefik"
 spec:
   rules:
