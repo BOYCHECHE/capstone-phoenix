@@ -1,27 +1,23 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
 metadata:
-  name: taskapp-ingress
+  name: taskapp-ingressroute
   namespace: taskapp
   annotations:
-    argocd.argoproj.io/tracking-id: taskapp-gitops:networking.k8s.io/Ingress:taskapp/taskapp-ingress
+    argocd.argoproj.io/tracking-id: taskapp-gitops:traefik.io/IngressRoute:taskapp/taskapp-ingressroute
 spec:
-  ingressClassName: traefik
-  rules:
-    - host: taskapp.51.20.43.134.sslip.io
-      http:
-        paths:
-          - path: /api
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: backend
-                port:
-                  number: 5000
-          - path: /
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: frontend
-                port:
-                  number: 80
+  entryPoints:
+    - web
+  routes:
+    # 1. API Path Routing rule
+    - match: Host(`taskapp.51.20.43.134.sslip.io`) && PathPrefix(`/api`)
+      kind: Rule
+      services:
+        - name: backend
+          port: 5000
+    # 2. Frontend User Interface Routing rule
+    - match: Host(`taskapp.51.20.43.134.sslip.io`) && PathPrefix(`/`)
+      kind: Rule
+      services:
+        - name: frontend
+          port: 80
