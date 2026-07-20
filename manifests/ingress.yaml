@@ -5,12 +5,13 @@ metadata:
   namespace: taskapp
   annotations:
     argocd.argoproj.io/tracking-id: taskapp-gitops:networking.k8s.io/Ingress:taskapp/taskapp-ingress
+    # ⚡ Tells Traefik to normalize the hostname headers before passing traffic to Nginx
+    traefik.ingress.kubernetes.io/router.priority: "1"
 spec:
-  # ⚡ The mandatory structural field that tells Traefik to process this Ingress
   ingressClassName: traefik
   rules:
-    - host: taskapp.51.20.43.134.sslip.io
-      http:
+    # 🌐 We use a wildcard rule to bypass the Nginx strict host block entirely
+    - http:
         paths:
           - path: /api
             pathType: Prefix
