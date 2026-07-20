@@ -7,15 +7,16 @@ metadata:
     argocd.argoproj.io/tracking-id: taskapp-gitops:traefik.io/IngressRoute:taskapp/taskapp-ingressroute
 spec:
   entryPoints:
-    - web
+    - web # Handles http:// traffic on Port 80
+    - websecure # Handles https:// traffic on Port 443
   routes:
-    # 1. API Path Routing rule
+    # 1. API Route
     - match: Host(`taskapp.51.20.43.134.sslip.io`) && PathPrefix(`/api`)
       kind: Rule
       services:
         - name: backend
           port: 5000
-    # 2. Frontend User Interface Routing rule
+    # 2. Frontend User Interface Route
     - match: Host(`taskapp.51.20.43.134.sslip.io`) && PathPrefix(`/`)
       kind: Rule
       services:
