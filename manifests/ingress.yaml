@@ -4,7 +4,9 @@ metadata:
   name: taskapp-ingress
   namespace: taskapp
   annotations:
-    kubernetes.io/ingress.class: "traefik"
+    kubernetes.io/ingress.class: traefik
+    # ⚡ Explicitly forces Traefik to look at Pod Endpoint IPs directly instead of ClusterIPs
+    traefik.ingress.kubernetes.io/service.nativelb: "true"
 spec:
   rules:
     - host: taskapp.51.20.43.134.sslip.io
